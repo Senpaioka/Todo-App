@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script> 
+    <title>ToDo App</title>
+</head>
+<body>
+
+    <div class="row">
+        <div class="column"><h1>To Do App</h1></div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+          <!-- first-column -->
+          <div class="column">
+            
+            <py-script>
+
+              import calendar
+              import datetime
+
+
+              MONTH = datetime.datetime.now().month
+              YEAR = datetime.datetime.now().year
+              TODAY = datetime.datetime.now()
+
+              calendar_output = calendar.month(YEAR, MONTH)
+
+              print(calendar_output)
+
+              
+              # date format
+              print('Today :')
+
+              month_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+              current_datetime = datetime.datetime.now()
+
+              curr_year = current_datetime.year
+              curr_month = month_list[current_datetime.month - 1]
+              curr_day = current_datetime.day
+
+              print(f'{curr_day} - {curr_month} - {curr_year}')
+
+            </py-script>
+
+          </div>
+          <!-- second column -->
+          <div class="column">
+            <div class="form-container">
+              <h1>Enter Title and Description</h1>
+              <form id="task_form">
+                  <!-- Title input field -->
+                  <label for="title">Title:</label>
+                  <input type="text" id="title" name="title" placeholder="Enter the title">
+      
+                  <!-- Description input field -->
+                  <label for="description">Description:</label>
+                  <textarea id="description" name="description" placeholder="Enter the description"></textarea>
+      
+                  <!-- Submit button -->
+                  <input type="submit" value="Submit">
+              </form>
+          </form>
+          </div>
+        </div>
+        <!-- third column -->
+        <div class="column">
+          <div class="list-part">
+            <h3>Tasks List :</h3>
+            <div id="task_item">
+              <h3 id="task_title"></h3>
+              <p id="task_details"></p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      
+
+
+</body>
+</html>
+
+<style>
+
+
+/* Container for the row and columns */
+.container {
+	display: flex;
+	justify-content: center;
+	position: absolute;
+	width: 99%;
+}
+
+/* The row */
+.row {
+  display: flex;
+  z-index: 1;
+}
+
+/* The individual columns */
+.column {
+  flex: 1; /* Each column takes an equal portion of the available space */
+  text-align: center;
+  padding: 10px;
+  /* border: 1px solid #ccc; */
+}
+
+py-terminal[docked] {
+	position: relative;
+}
+
+.py-terminal {
+background-color: transparent;
+padding-left: 20%;
+}
+
+/* input field css */
+
+.form-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 350px;
+    padding-right: 35px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="text"],
+textarea {
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    text-align: center;
+}
+
+input[type="text"] {
+    width: 100%;
+}
+
+textarea {
+    width: 100%;
+    height: 150px;
+}
+
+input[type="submit"] {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+
+input[type="submit"] {
+	text-align: center;
+}
+
+.list-part {
+  position: absolute;
+  margin-left: 5%;
+}
+
+.py-terminal {
+	min-height: 10em;
+	background-color: white;
+	color: red;
+	padding: 0.5rem;
+	overflow: auto;
+}
+
+</style>
+
+<script>
+
+  // Url Functionality [For Database integration]
+
+  const userInputTitle = document.getElementById("title");
+
+  userInputTitle.addEventListener("input", function() {
+    const userInput = userInputTitle.value;
+    window.history.pushState(null, "", "?input=" + encodeURIComponent(title));
+  });
+
+  const userInputDesc = document.getElementById("description");
+  
+  userInputDesc.addEventListener("input", function() {
+    const userInput = userInputDesc.value;
+    window.history.pushState(null, "", "?input=" + encodeURIComponent(description));
+  });
+
+
+
+
+
+
+
+
+
+
+  // Screen Display [Local storage]
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const todoForm = document.getElementById("task_form");
+    const title = document.getElementById("title");
+    const description = document.getElementById("description");
+    //const todoList = document.getElementById("task_title");
+    const todoList = document.getElementById("task_item");
+
+    todoForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        // Get the value of the input
+        const newTodoTitle = title.value.trim();
+        const newTodoDescription = description.value.trim();
+
+        if (newTodoTitle !== "") {
+            // Create a new list item
+            const newTodoItem = document.createElement("div");
+            newTodoItem.textContent = newTodoTitle;
+            const newTodoItem2 = document.createElement("div");
+            newTodoItem2.textContent = newTodoDescription;
+
+  
+
+            // Create a delete button
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "X";
+            deleteButton.className = "delete";
+            newTodoItem.appendChild(deleteButton);
+
+            // Append the new item to the list
+            todoList.appendChild(newTodoItem);
+            todoList.appendChild(newTodoItem2);
+
+            // Clear the input
+            title.value = "";
+            description.value = "";
+
+            // Add delete functionality
+            deleteButton.addEventListener("click", function() {
+                todoList.removeChild(newTodoItem);
+                todoList.removeChild(newTodoItem2);
+            });
+        }
+    });
+});
+
+
+  
+
+</script>
+
+
